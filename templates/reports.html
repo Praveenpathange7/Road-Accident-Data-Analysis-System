@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Reports · Roadwise{% endblock %}
+{% block content %}
+<section class="page-hero reports-hero">
+  <p class="kicker">REPORTS</p>
+  <h1>Your data, <em>ready to share.</em></h1>
+  <p class="lede">Choose a year and place, then download a PDF summary or CSV.</p>
+</section>
+{% if warning %}<p class="notice" role="status">{{ warning }}</p>{% endif %}
+<section class="filter-card reports-filter">
+  <form method="get" action="/reports">
+    <input type="hidden" name="scope" value="state">
+    <label for="report-year">Year<select id="report-year" name="year">{% for y in years %}<option value="{{ y }}" {% if year|string == y|string %}selected{% endif %}>{{ y }}</option>{% endfor %}</select></label>
+    <label for="report-state">State / UT<select id="report-state" name="state"><option value="All States and UTs">All States and UTs</option>{% for item in states %}<option value="{{ item }}" {% if state == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></label>
+    <label for="report-search">Search place<input id="report-search" type="search" name="q" value="{{ q }}" placeholder="e.g. Kerala"></label>
+    <button class="button dark">Apply filters</button>
+  </form>
+</section>
+<section class="report-card">
+  <div class="report-icon" aria-hidden="true">▤</div>
+  <div>
+    <p class="kicker">REPORT READY · {{ count }} {% if count == 1 %}ROW{% else %}ROWS{% endif %}</p>
+    <h2>{{ state if state != "All States and UTs" else "India · States and UTs" }} · {{ year }}</h2>
+    <p class="copy">Includes accident totals, available casualty figures, and source notes.{% if q %} Search: “{{ q }}”.{% endif %}</p>
+    <div class="export-actions">
+      <a class="button primary" href="/reports/download.pdf?scope=state&amp;year={{ year }}{% if state != 'All States and UTs' %}&amp;state={{ state|urlencode }}{% endif %}{% if q %}&amp;q={{ q|urlencode }}{% endif %}">Download PDF ↓</a>
+      <a class="button outline" href="/reports/download.csv?scope=state&amp;year={{ year }}{% if state != 'All States and UTs' %}&amp;state={{ state|urlencode }}{% endif %}{% if q %}&amp;q={{ q|urlencode }}{% endif %}">Download CSV</a>
+    </div>
+  </div>
+</section>
+<p class="report-note">Figures are official reported totals. A dash means casualty data is unavailable for that year, not zero. {{ source }}</p>
+{% endblock %}
